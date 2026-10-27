@@ -3,7 +3,7 @@
 What it does: a visitor fills in a form on the website, the website sends the details to this API, and the API emails them to the insurance manager. **No payments, no database, no logins.** The manager phones the customer and sends payment details personally.
 
 ```
-Website form  -->  POST /api/quote/submit  -->  checks + cleans the data  -->  email (Mailgun)  -->  jia@jazapay.co.ke
+Website form  -->  POST /api/quote/submit  -->  checks + cleans the data  -->  email (Mailgun)  -->  info@jia.co.ke
 ```
 
 ## 1. Run it on your computer
@@ -56,7 +56,16 @@ Check for leaked secrets before every push: `git status` must not list `.env`.
 
 1. Push the project to GitHub (the `.env` file stays on your computer).
 2. On **Render** (or Railway): New → Web Service → connect the repo. Root directory `backend`, build command `npm install`, start command `npm start`.
-3. In the host's **Environment** page add the same variables as your `.env`, with `NODE_ENV=production` and `ALLOWED_ORIGIN=https://your-live-site` (no trailing slash).
-4. Copy the live API address, put it in `API_URL` at the top of `js/main.js`, commit and push so Netlify updates the site.
-5. Test a form on the live site.
-6. **Switch to the real mailbox:** verify your own sending domain in Mailgun (add the DNS records it shows), set `EMAIL_FROM` to an address on that domain, and change `RECIPIENT_EMAIL` to `jia@jazapay.co.ke` (or the final address). Changing it is only an environment edit and a restart. No code change is needed.
+3. In the host's **Environment** page add the same variables as your `.env`, with `NODE_ENV=production` and `ALLOWED_ORIGIN=https://jia.co.ke,https://www.jia.co.ke` (no trailing slash, no spaces).
+4. Copy the live API address, put it in `API_URL` at the top of `js/main.js`, commit and push so the website updates. `API_URL` is the API host, not `https://jia.co.ke`, unless the API is actually served on that domain.
+5. In VS Code, from the project folder, attach the domain on Vercel:
+   ```powershell
+   npx vercel login
+   npx vercel link
+   npx vercel domains add jia.co.ke
+   npx vercel domains add www.jia.co.ke
+   npx vercel --prod
+   ```
+   At the DNS host for `jia.co.ke`, add the records `vercel domains add` prints. Use `www` as a CNAME to `cname.vercel-dns.com`, and the apex as the A record Vercel shows.
+6. In Mailgun, add the sending domain `jia.co.ke` and publish the SPF and DKIM records it shows. Add DMARC: `v=DMARC1; p=none; rua=mailto:info@jia.co.ke`. Turn off open tracking and click tracking. Set `EMAIL_FROM=quotes@jia.co.ke`. Keep `RECIPIENT_EMAIL` as your own inbox until a test message shows `spf=pass`, `dkim=pass`, and `dmarc=pass`, then set `RECIPIENT_EMAIL=info@jia.co.ke` and restart the API.
+7. Open `https://jia.co.ke/#quote`, submit one test, and confirm it arrives in the inbox and on the staff dashboard.

@@ -1,0 +1,12 @@
+{
+  "cleanUrls": false,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.jia.co.ke" }],
+      "destination": "https://jia.co.ke/$1",
+      "permanent": true
+    }
+  ]
+}

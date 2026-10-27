@@ -8,7 +8,9 @@ toggle.addEventListener("click", () => {
 });
 
 // 2. Forms: check the details, then send them to our API, which emails the insurance team.
-// When you deploy the backend, change API_URL to its live address (no slash at the end).
+// The public website is https://jia.co.ke. API_URL is the quote API, not the website address.
+// Local testing: http://localhost:3000
+// After the API is hosted, set this to that host with no slash at the end, then redeploy the site.
 const API_URL = "http://localhost:3000";
 
 // Collects every field in a form. Checkboxes with the same name (add-ons) become a list.
